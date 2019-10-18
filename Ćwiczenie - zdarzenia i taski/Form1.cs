@@ -16,10 +16,16 @@ namespace Ćwiczenie___zdarzenia_i_taski
     {
         Obliczenia obliczenia;
 
+        //public delegate int UstawProgressBar();
+        //public event UstawProgressBar ustawProgressBar;
+
+        Action<int> ustawProgressBar;
         public Form1()
         {
             InitializeComponent();
+            ustawProgressBar += value => progressBar.Value = value;
         }
+        
 
         private void ButtonOblicz_Click(object sender, EventArgs e)
         {
@@ -40,6 +46,7 @@ namespace Ćwiczenie___zdarzenia_i_taski
             //int wynik = obliczenia.Obliczaj();
             Task<int> wynik = ObliczajAsync();
 
+            do { Application.DoEvents(); } while (!wynik.IsCompleted);
             MessageBox.Show($"wynik: {wynik.Result}");
 
         }
@@ -51,20 +58,20 @@ namespace Ćwiczenie___zdarzenia_i_taski
 
         void Rozpoczecie_Obliczen()
         {
-            //MessageBox.Show("Wywołanie zdarzenia RozpoczecieObliczenEvent");
-            progressBar.Value = 0;
+            //progressBar.Value = 0;
+            this.Invoke(ustawProgressBar, 0);
         }
 
         void Zakonczenie_Obliczen()
         {
-            //MessageBox.Show("Wywołanie zdarzenia ZakonczenieObliczenEvent");
-            progressBar.Value = 100;
+            //progressBar.Value = 100;
+            this.Invoke(ustawProgressBar, 100);
         }
 
         void Progres_Obliczen(ProgresEventArgs postep)
         {
-            //MessageBox.Show(postep.ToString());
-            progressBar.Value = postep.wynik;
+            //progressBar.Value = postep.wynik;
+            this.Invoke(ustawProgressBar, postep.wynik);
         }
 
     }
